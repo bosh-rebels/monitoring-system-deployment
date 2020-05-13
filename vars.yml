@@ -1,0 +1,33 @@
+deployment_name: monitoring-system
+
+kibana_version: 
+kibana_sha1:
+kibana_instances:
+kibana_vm_type:
+kibana_persistent_disk_type:
+kibana_network:
+
+elasticsearch_version:
+elasticsearch_sha1:
+elasticsearch_instances:
+elasticsearch_vm_type:  
+elasticsearch_persistent_disk_type:
+elasticsearch_network:
+
+zookeeper_version:
+zookeeper_sha1:
+zookeeper_instances: 5
+zookeeper_vm_type:
+zookeeper_network:
+
+cmak_version:
+cmak_sha1:
+cmak_instances: 3
+cmak_vm_type:
+cmak_network:
+
+stemcell_os:
+stemcell_version:
+
+errands_vm_type:
+errands_network:
