@@ -215,3 +215,5 @@ jobs:
         cmak_instances: 1 
         cmak_vm_type: default 
         cmak_network: default
+        errands_network: default
+        errands_vm_type: default

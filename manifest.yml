@@ -96,7 +96,7 @@ instance_groups:
     stemcell: default
     persistent_disk_type: ((kafka_persistent_disk_type))
     networks:
-      name: ((kafka_network))
+      - name: ((kafka_network))
     jobs:
       - name: kafka
         release: kafka
@@ -152,7 +152,7 @@ instance_groups:
     networks:
       - name: ((errands_network))
 
-  - name: errands
+  - name: elasticsearch-errands
     jobs:
       - name: pre-upgrade
         release: elasticsearch
