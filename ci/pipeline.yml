@@ -84,6 +84,7 @@ jobs:
 - name: deploy-elasticsearch
   plan:
   - get: monitoring-system-deployment
+    trigger: true
   - get: elasticsearch-compiled-release
   - get: kibana-compiled-release
   - get: kafka-compiled-release
@@ -93,42 +94,42 @@ jobs:
   - get: ubuntu-xenial
 
   - task: calculate-sha-for-kibana
-    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    file: monitoring-system-deployment/ci/calculate-sha/task.yml
     input_mapping:
       tarball: kibana-compiled-release
     output_mapping:
       sha: kibana-sha
 
   - task: calculate-sha-for-elasticsearch
-    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    file: monitoring-system-deployment/ci/calculate-sha/task.yml
     input_mapping:
       tarball: elasticsearch-compiled-release
     output_mapping:
       sha: elasticsearch-sha
 
   - task: calculate-sha-for-kafka
-    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    file: monitoring-system-deployment/ci/calculate-sha/task.yml
     input_mapping:
       tarball: kafka-compiled-release
     output_mapping:
       sha: kafka-sha
 
   - task: calculate-sha-for-cmak
-    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    file: monitoring-system-deployment/ci/calculate-sha/task.yml
     input_mapping:
       tarball: cmak-compiled-release
     output_mapping:
       sha: cmak-sha
 
   - task: calculate-sha-for-zookeeper
-    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    file: monitoring-system-deployment/ci/calculate-sha/task.yml
     input_mapping:
       tarball: zookeeper-compiled-release
     output_mapping:
       sha: zookeeper-sha
 
   - task: calculate-sha-for-elasticapm
-    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    file: monitoring-system-deployment/ci/calculate-sha/task.yml
     input_mapping:
       tarball: elasticapm-compiled-release
     output_mapping:
