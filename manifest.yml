@@ -1,294 +1,182 @@
 ---
 name: ((deployment_name))
 releases:
-- name: elasticsearch
-  version: ((elasticsearch_version))
-  sha1: ((elasticsearch_sha1))
-  url: ((elasticsearch_url))
+  - name: elasticsearch
+    version: ((elasticsearch_version))
+    sha1: ((elasticsearch_sha1))
 
-- name: kibana
-  version: ((kibana_version))
-  sha1: ((kibana_sha1))
-  url: ((kibana_url))
+  - name: kibana
+    version: ((kibana_version))
+    sha1: ((kibana_sha1))
 
-- name: kafka
-  sha1: ((kafka_sha1))
-  version: ((kafka_version))
-  url: ((kafka_url))
+  - name: kafka
+    sha1: ((kafka_sha1))
+    version: ((kafka_version))
 
-- name: zookeeper
-  version: ((zookeeper_version))
-  sha1: ((zookeeper_sha1))
-  url: ((zookeeper_url))
+  - name: zookeeper
+    version: ((zookeeper_version))
+    sha1: ((zookeeper_sha1))
 
-- name: cmak
-  version: ((cmak_version))
-  sha1: ((cmak_sha1))
-  url: ((cmak_url))
+  - name: cmak
+    version: ((cmak_version))
+    sha1: ((cmak_sha1))
 
-- name: elasticapm
-  version: ((elasticapm_version))
-  sha1: ((elasticapm_sha1))
-  url: ((elasticapm_url))
+  - name: elasticapm
+    version: ((elasticapm_version))
+    sha1: ((elasticapm_sha1))
 
 stemcells:
-- os: ((stemcell_os)
-  alias: default
-  version: ((stemcell_version))
+  - os: ((stemcell_os)
+    alias: default
+    version: ((stemcell_version))
 
 instance_groups:
-- name: elasticsearch
-  jobs:
   - name: elasticsearch
-    release: elasticsearch
-    properties:
-      elasticsearch:
-        node:
-          allow_master: true
-          allow_ingest: true
-          allow_data: true
-        config_options:
-          xpack.monitoring.enabled: true
-          xpack.monitoring.collection.enabled: true
-          xpack.monitoring.collection.interval: 10s
-          xpack.monitoring.history.duration: 7d
-    provides:
-      elasticsearch:
-        as: elasticsearch
-    consumes:
-      elasticsearch:
-        from: elasticsearch
-  instances: ((elasticsearch_instances))
-  stemcell: default
-  azs:
-  - z1
-  - z2
-  - z3
-  vm_type: ((elasticsearch_vm_type))
-  persistent_disk_type: ((elasticsearch_persistent_disk_type))
-  networks:
-  - name: ((elasticsearch_network))
- 
-- name: errands
-  jobs:
-  - name: pre-upgrade
-    release: elasticsearch
-  - name: post-upgrade
-    release: elasticsearch
-  instances: 1
-  lifecycle: errand
-  stemcell: default
-  azs:
-  - z1
-  - z2
-  - z3
-  vm_type: ((errands_vm_type))
-  persistent_disk: 1024
-  networks:
-  - name: ((errands_network))
+    jobs:
+      - name: elasticsearch
+        release: elasticsearch
+        properties:
+          elasticsearch:
+            node:
+              allow_master: true
+              allow_ingest: true
+              allow_data: true
+            config_options:
+              xpack.monitoring.enabled: true
+              xpack.monitoring.collection.enabled: true
+              xpack.monitoring.collection.interval: 10s
+              xpack.monitoring.history.duration: 7d
+    instances: ((elasticsearch_instances))
+    stemcell: default
+    azs:
+      - z1
+      - z2
+      - z3
+    vm_type: ((elasticsearch_vm_type))
+    persistent_disk_type: ((elasticsearch_persistent_disk_type))
+    networks:
+      - name: ((elasticsearch_network))
 
-- name: kibana
-  jobs:
   - name: kibana
-    release: kibana
-  instances: ((kibana_instances))
-  stemcell: default
-  azs:
-  - z1
-  - z2
-  - z3
-  vm_type: ((kibana_vm_type))
-  persistent_disk_type: ((kibana_persistent_disk_type))
-  networks:
-  - name: ((kibana_network))
-  
-- name: apm-server
-  jobs:
-    - name: apm-server
-      release: elasticapm
-      properties: {}
-      consumes:
-        elasticsearch:
-          from: elasticsearch
-  instances: ((elasticapm_instances))
-  stemcell: default
-  azs:
-    - z1
-    - z2
-    - z3
-  vm_type: ((elasticapm_vm_type))
-  networks:
-    - name: ((elasticapm_network))
+    jobs:
+      - name: kibana
+        release: kibana
+    instances: ((kibana_instances))
+    stemcell: default
+    azs:
+      - z1
+      - z2
+      - z3
+    vm_type: ((kibana_vm_type))
+    persistent_disk_type: ((kibana_persistent_disk_type))
+    networks:
+      - name: ((kibana_network))
+    
+  - name: apm-server
+    jobs:
+      - name: apm-server
+        release: elasticapm
+    instances: ((elasticapm_instances))
+    stemcell: default
+    azs:
+      - z1
+      - z2
+      - z3
+    vm_type: ((elasticapm_vm_type))
+    networks:
+      - name: ((elasticapm_network))
 
-- name: kafka
-  azs: [z1, z2, z3]
-  instances: ((kafka_instances))
-  vm_type: ((kafka_vm_type))
-  stemcell: ((kafka_stemcell))
-  persistent_disk: ((kafka_persistent_disk))
-  networks: [{name: ((kafka_network))}]
-  jobs:
   - name: kafka
-    release: kafka
-    provides:
-      kafka-address:
-        as: the-kafka-address
-    custom_provider_definitions:
-    - name: kafka-address
-      type: address
-    properties:
-      <<: *jobs_kafka_properties
-- name: sanitytest
-  lifecycle: errand
-  azs: 
-  - z1
-  - z2
-  - z3
-  instances: 1
-  vm_type: ((sanitytest_vm_type))
-  stemcell: ((sanitytest_stemcell))
-  networks: 
-  - name: ((sanitytest_network))
-  jobs:
-  - name: sanitytest
-    release: kafka
-- name: generatetopics
-  lifecycle: errand
-  azs: 
-  - z1
-  - z2
-  - z3
-  instances: 1
-  vm_type: ((generatetopics_vm_type))
-  stemcell: ((generatetopics_stemcell))
-  jobs:
-  - name: generatetopics
-    release: kafka
+    azs:
+      - z1
+      - z2
+      - z3
+    instances: ((kafka_instances))
+    vm_type: ((kafka_vm_type))
+    stemcell: default
+    persistent_disk_type: ((kafka_persistent_disk_type))
+    networks:
+      name: ((kafka_network))
+    jobs:
+      - name: kafka
+        release: kafka
 
-- name: zookeeper 
-  jobs:
   - name: zookeeper
-    release: zookeeper
-    properties:
-      <<: *jobs_zookeeper_properties
-  - name: status
-    release: zookeeper
-  instances: ((zookeeper_instances))
-  stemcell: default
-  azs: 
-  - z1
-  - z2
-  - z3
-  vm_type: ((zookeeper_vm_type))
-  stemcell: default
-  persistent_disk: 10240
-  networks:
-  - name: ((zookeeper_network))
+    jobs:
+      - name: zookeeper
+        release: zookeeper
+      - name: status
+        release: zookeeper
+    instances: ((zookeeper_instances))
+    stemcell: default
+    azs: 
+      - z1
+      - z2
+      - z3
+    vm_type: ((zookeeper_vm_type))
+    stemcell: default
+    persistent_disk_type: ((zookeeper_persistent_disk_type))
+    networks:
+      - name: ((zookeeper_network))
+    
+  - name: cmak
+    jobs:
+      - name: cmak
+        release: cmak
+        properties:
+          password: ((cmak_password))
+    instances: ((cmak_instances)) 
+    stemcell: default
+    azs: 
+      - z1
+      - z2
+      - z3
+    vm_type: ((cmak_vm_type))
+    networks:
+      - name: ((cmak_network))
 
-- name: smoke-tests
-  azs: 
-  - z1
-  lifecycle: errand
-  instances: 1
-  jobs:
-  - name: smoke-tests
-    release: zookeeper
-  vm_type: ((errands_vm_type))
-  stemcell: default
-  networks:
-  - name: ((errands_network))
+  - name: monitoring-system-smoke-tests
+    azs: 
+      - z1
+      - z2
+      - z3
+    lifecycle: errand
+    instances: 1
+    jobs:
+      - name: smoke-tests
+        release: zookeeper
+      - name: sanitytest
+        release: kafka
+    vm_type: ((errands_vm_type))
+    stemcell: default
+    networks:
+      - name: ((errands_network))
 
-
-- name: cmak
-  jobs:
-    - name: cmak
-      release: cmak
-      properties:
-        name: ((cmak_name))
-        username: admin
-        password: ((cmak-password)) 
-        listen_port: ((cmak_listen_port))
-  instances: ((cmak_instances)) 
-  stemcell: default
-  azs: 
-  - z1
-  - z2
-  - z3
-  vm_type: ((cmak_vm_type))
-  networks:
-    - name: ((cmak_network))
+  - name: errands
+    jobs:
+      - name: pre-upgrade
+        release: elasticsearch
+      - name: post-upgrade
+        release: elasticsearch
+    instances: 1
+    lifecycle: errand
+    stemcell: default
+    azs:
+      - z1
+      - z2
+      - z3
+    vm_type: ((errands_vm_type))
+    persistent_disk: 1024
+    networks:
+      - name: ((errands_network))
 
 variables:
   - name: cmak_password
     type: password
-  - name: kafka_ca
-    type: certificate
-    options:
-      is_ca: true
-      common_name: ((kafka_deployment_name))
-  - name: kafka_tls_certificate
-    type: certificate
-    options:
-      ca: kafka_ca
-      common_name: ((kafka_deployment_name))_server
-    consumes:
-      alternative_name: the-kafka-address
 
 update:
   canaries: 1
   max_in_flight: 1
   serial: true
   canary_watch_time: 30000-600000
-  update_watch_time: 5000-600000
-
-jobs_zookeeper_properties: &jobs_zookeeper_properties
-  listen_address: ((zookeeper_listen_address))
-  client_port: ((zookeeper_client_port))
-  quorum_port: ((zookeeper_quorum_port))
-  leader_election_port: ((zookeeper_leader_election_port))
-  autopurge_purge_interval: ((zookeeper_autopurge_purge_interval))
-  autopurge_snap_retain_count: ((zookeeper_autopurge_snap_retain_count))
-  cnx_timeout: ((zookeeper_cnx_timeout))
-  election_algorim: ((zookeeper_election_algorim))
-  warning_threshold_ms: ((zookeeper_warning_threshold_ms))
-  global_outstanding_limit: ((zookeeper_global_outstanding_limit))
-  init_limit: ((zookeeper_init_limit))
-  leader_serves: ((zookeeper_leader_serves))
-  max_client_connections: ((zookeeper_max_client_connections))
-  max_session_timeout: ((zookeeper_max_session_timeout))
-  min_session_timeout: ((zookeeper_min_session_timeout))
-  pre_allocation_size: ((zookeeper_pre_allocation_size))
-  snap_count: ((zookeeper_snap_count))
-  sync_enabled: ((zookeeper_sync_enabled))
-  sync_limit: ((zookeeper_sync_limit))
-  tick_time: ((zookeeper_tick_time))
-  force_sync: ((zookeeper_force_sync))
-
-jobs_kafka_properties: &jobs_kafka_properties
-  listen_port: ((kafka_listen_port))
-  starting_index: ((kafka_starting_index))
-  index_spacing: ((kafka_index_spacing))
-  rack_id: ((kafka_rack_id))
-  jmx_port: ((kafka_jmx_port))
-  heap_size: ((kafka_heap_size))
-  topics: ((kafka_topics))
-  delete_topic: ((kafka_delete_topic))
-  keystore_password: ((kafka_keystore_password))
-  enable_sasl_scram: ((kafka_enable_sasl_scram))
-  offsets:
-      topic:
-          replication:
-              factor: ((kafka_offsets_topic_replication_factor))
-  auto:
-      create:
-          topics:
-              enable: ((kafka_enable_topics))
-  transaction:
-      state:
-          log:
-              replication:
-                  factor: ((kafka_transaction_state_log_replication_factor))
-              min:
-                  isr: ((kafka_transaction_state_log_min_isr))
-  advertised:
-      listener: ((kafka_advertised_listener))
+  update_watch_time: 30000-600000

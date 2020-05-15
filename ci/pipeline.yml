@@ -1,0 +1,216 @@
+resource_types:
+- name: bosh-deployment
+  type: docker-image
+  source:
+    repository: cloudfoundry/bosh-deployment-resource
+
+resources:
+- name: monitoring-system-deployment
+  type: git
+  source:
+    uri: https://github.com/bosh-rebels/monitoring-system-deployment
+    branch: master
+
+- name: ubuntu-xenial
+  type: bosh-io-stemcell
+  source:
+    name: bosh-aws-xen-hvm-ubuntu-xenial-go_agent
+    version_family: ((stemcell_version))
+
+- name: deploy-release
+  type: bosh-deployment
+  source:
+    deployment: monitoring-system-test
+    target: ((bosh_target))
+    client: ((bosh_client))
+    client_secret: ((bosh_client_secret))
+    ca_cert: ((bosh_ca_cert))
+
+- name: elasticsearch-compiled-release
+  type: s3
+  source:
+    region_name: ((s3_region))
+    bucket: binary-releases-repo-rebels
+    regexp: "elasticsearch/elasticsearch-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
+    access_key_id: ((s3_access_key_id))
+    secret_access_key: ((s3_secret_access_key))
+
+- name: kibana-compiled-release
+  type: s3
+  source:
+    region_name: ((s3_region))
+    bucket: binary-releases-repo-rebels
+    regexp: "kibana/kibana-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
+    access_key_id: ((s3_access_key_id))
+    secret_access_key: ((s3_secret_access_key))
+
+- name: kafka-compiled-release
+  type: s3
+  source:
+    region_name: ((s3_region))
+    bucket: binary-releases-repo-rebels
+    regexp: "kafka/kafka-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
+    access_key_id: ((s3_access_key_id))
+    secret_access_key: ((s3_secret_access_key))
+
+- name: cmak-compiled-release
+  type: s3
+  source:
+    region_name: ((s3_region))
+    bucket: binary-releases-repo-rebels
+    regexp: "cmak/cmak-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
+    access_key_id: ((s3_access_key_id))
+    secret_access_key: ((s3_secret_access_key))
+
+- name: zookeeper-compiled-release
+  type: s3
+  source:
+    region_name: ((s3_region))
+    bucket: binary-releases-repo-rebels
+    regexp: "zookeeper/zookeeper-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
+    access_key_id: ((s3_access_key_id))
+    secret_access_key: ((s3_secret_access_key))
+  
+- name: elasticapm-compiled-release
+  type: s3
+  source:
+    region_name: ((s3_region))
+    bucket: binary-releases-repo-rebels
+    regexp: "elasticapm/elasticapm-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
+    access_key_id: ((s3_access_key_id))
+    secret_access_key: ((s3_secret_access_key))
+
+jobs:
+- name: deploy-elasticsearch
+  plan:
+  - get: monitoring-system-deployment
+  - get: elasticsearch-compiled-release
+  - get: kibana-compiled-release
+  - get: kafka-compiled-release
+  - get: cmak-compiled-release
+  - get: zookeeper-compiled-release
+  - get: elasticapm-compiled-release
+  - get: ubuntu-xenial
+
+  - task: calculate-sha-for-kibana
+    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    input_mapping:
+      tarball: kibana-compiled-release
+    output_mapping:
+      sha: kibana-sha
+
+  - task: calculate-sha-for-elasticsearch
+    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    input_mapping:
+      tarball: elasticsearch-compiled-release
+    output_mapping:
+      sha: elasticsearch-sha
+
+  - task: calculate-sha-for-kafka
+    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    input_mapping:
+      tarball: kafka-compiled-release
+    output_mapping:
+      sha: kafka-sha
+
+  - task: calculate-sha-for-cmak
+    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    input_mapping:
+      tarball: cmak-compiled-release
+    output_mapping:
+      sha: cmak-sha
+
+  - task: calculate-sha-for-zookeeper
+    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    input_mapping:
+      tarball: zookeeper-compiled-release
+    output_mapping:
+      sha: zookeeper-sha
+
+  - task: calculate-sha-for-elasticapm
+    file: monitoring-system-deployment/ci/tasks/calculate-sha/task.yml
+    input_mapping:
+      tarball: elasticapm-compiled-release
+    output_mapping:
+      sha: elasticapm-sha
+
+  - load_var: kibana_version
+    file: kibana-compiled-release/version
+  - load_var: kibana_sha1
+    file: kibana-sha/sha1
+
+  - load_var: elasticsearch_version
+    file: elasticsearch-compiled-release/version
+  - load_var: elasticsearch_sha1
+    file: elasticsearch-sha/sha1
+
+  - load_var: zookeeper_version
+    file: zookeeper-compiled-release/version
+  - load_var: zookeeper_sha1
+    file: zookeeper-sha/sha1
+
+  - load_var: kafka_version
+    file: kafka-compiled-release/version
+  - load_var: kafka_sha1
+    file: kafka-sha/sha1
+
+  - load_var: elasticapm_version
+    file: elasticapm-compiled-release/version
+  - load_var: elasticapm_sha1
+    file: elasticapm-sha/sha1
+
+  - load_var: cmak_version
+    file: cmak-compiled-release/version
+  - load_var: cmak_sha1
+    file: cmak-sha/sha1
+
+  - put: deploy-release
+    params:
+      manifest: monitoring-system-deployment/manifest.yml
+      stemcells:
+        - ubuntu-xenial/*.tgz
+      releases:
+        - elasticsearch-compiled-release/*.tgz
+        - kibana-compiled-release/*.tgz
+        - zookeeper-compiled-release/*.tgz
+        - kafka-compiled-release/*.tgz
+        - elasticapm-compiled-release/*.tgz
+        - cmak-compiled-release/*.tgz
+      vars:
+        deployment_name: monitoring-system-test
+        elasticsearch_version: ((.:elasticsearch_version)) 
+        elasticsearch_sha1: ((.:elasticsearch_sha1))
+        kibana_version: ((.:kibana_version)) 
+        kibana_sha1: ((.:kibana_sha1))
+        kafka_version: ((.:kafka_version)) 
+        kafka_sha1: ((.:kafka_sha1))
+        zookeeper_version: ((.:zookeeper_version)) 
+        zookeeper_sha1: ((.:zookeeper_sha1))
+        cmak_version: ((.:cmak_version)) 
+        cmak_sha1: ((.:cmak_sha1))
+        elasticapm_version: ((.:elasticapm_version)) 
+        elasticapm_sha1: ((.:elasticapm_sha1))
+        stemcell_os: ubuntu-xenial
+        stemcell_version: ((stemcell_version)) 
+        elasticsearch_instances: 2 
+        elasticsearch_vm_type: default 
+        elasticsearch_persistent_disk_type: default 
+        elasticsearch_network: default 
+        kibana_instances: 1 
+        kibana_vm_type: default 
+        kibana_persistent_disk_type: default 
+        kibana_network: default 
+        elasticapm_instances: 1 
+        elasticapm_vm_type: default 
+        elasticapm_network: default 
+        kafka_instances: 2 
+        kafka_vm_type: default 
+        kafka_persistent_disk_type: default 
+        kafka_network: default 
+        zookeeper_instances: 2 
+        zookeeper_vm_type: default 
+        zookeeper_network: default 
+        zookeeper_persistent_disk_type: default 
+        cmak_instances: 1 
+        cmak_vm_type: default 
+        cmak_network: default
