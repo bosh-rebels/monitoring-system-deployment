@@ -108,3 +108,6 @@ zookeeper_sync_enabled: true
 zookeeper_sync_limit: 2
 zookeeper_tick_time: 2000
 zookeeper_warning_threshold_ms: 1000
+
+
+bpm_version: 1.1.8

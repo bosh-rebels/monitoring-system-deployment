@@ -80,6 +80,15 @@ resources:
     access_key_id: ((s3_access_key_id))
     secret_access_key: ((s3_secret_access_key))
 
+- name: bpm-compiled-release
+  type: s3
+  source:
+    region_name: ((s3_region))
+    bucket: binary-releases-repo-rebels
+    regexp: "bpm/bpm-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
+    access_key_id: ((s3_access_key_id))
+    secret_access_key: ((s3_secret_access_key))
+
 jobs:
 - name: deploy-elasticsearch
   plan:
@@ -91,6 +100,7 @@ jobs:
   - get: cmak-compiled-release
   - get: zookeeper-compiled-release
   - get: elasticapm-compiled-release
+  - get: bpm-compiled-release
   - get: ubuntu-xenial
 
   - task: calculate-sha-for-kibana
@@ -165,6 +175,9 @@ jobs:
   - load_var: cmak_sha1
     file: cmak-sha/sha1
 
+  - load_var: bpm_version
+    file: bpm-compiled-release/version
+
   - put: deploy-release
     params:
       manifest: monitoring-system-deployment/manifest.yml
@@ -177,6 +190,7 @@ jobs:
         - kafka-compiled-release/*.tgz
         - elasticapm-compiled-release/*.tgz
         - cmak-compiled-release/*.tgz
+        - bpm-compiled-release/*.tgz
       vars:
         deployment_name: monitoring-system-test
         elasticsearch_version: ((.:elasticsearch_version)) 
@@ -191,6 +205,7 @@ jobs:
         cmak_sha1: ((.:cmak_sha1))
         elasticapm_version: ((.:elasticapm_version)) 
         elasticapm_sha1: ((.:elasticapm_sha1))
+        bpm_version: ((.:bpm_version)) 
         stemcell_os: ubuntu-xenial
         stemcell_version: ((stemcell_version)) 
         elasticsearch_instances: 2 

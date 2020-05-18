@@ -25,6 +25,9 @@ releases:
     version: ((elasticapm_version))
     sha1: ((elasticapm_sha1))
 
+  - name: bpm
+    version: ((bpm_version))
+
 stemcells:
   - os: ((stemcell_os))
     alias: default
