@@ -232,3 +232,4 @@ jobs:
         cmak_network: default
         errands_network: default
         errands_vm_type: default
+        errands_persistent_disk_type: default
