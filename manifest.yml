@@ -99,7 +99,7 @@
     - name: zookeeper
       instances: ((zookeeper_instances))
       vm_type: ((zookeeper_vm_type))
-      stemcell: ((zookeeper_stemcell))
+      stemcell: default
       persistent_disk_type: ((zookeeper_persistent_disk_type))
       azs: 
         - z1
@@ -117,7 +117,7 @@
     - name: kafka
       instances: ((kafka_instances))
       vm_type: ((kafka_vm_type))
-      stemcell: ((kafka_stemcell))
+      stemcell: default
       persistent_disk_type: ((kafka_persistent_disk_type))
       azs: 
         - z1
