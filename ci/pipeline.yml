@@ -19,12 +19,17 @@ resources:
 
 - name: deploy-release
   type: bosh-deployment
-  source:
+  source: &bosh-deployment-source
     deployment: monitoring-system-test
     target: ((bosh_target))
     client: ((bosh_client))
     client_secret: ((bosh_client_secret))
     ca_cert: ((bosh_ca_cert))
+
+- name: remove-deployment
+  type: bosh-deployment
+  source: 
+    <<: *bosh-deployment-source
 
 - name: offline-release-version
   type: semver
@@ -33,7 +38,7 @@ resources:
     region_name: ((s3_region))
     initial_version: 0.0.1
     bucket: bosh-releases-semver-rebels
-    key: deployment/monitoring-system/version
+    key: deployments/monitoring-system/version
     access_key_id: ((s3_access_key_id))
     secret_access_key: ((s3_secret_access_key))
 
@@ -113,7 +118,8 @@ jobs:
   - get: elasticapm-compiled-release
   - get: bpm-compiled-release
   - get: ubuntu-xenial
-  - get: offline-release-version 
+  - get: offline-release-version
+    params: {bump: patch}
 
   - task: calculate-sha-for-kibana
     file: monitoring-system-deployment/ci/calculate-sha/task.yml
@@ -248,10 +254,20 @@ jobs:
     on_success:
       do:
         - task: create-offline-release
-          file: create-offline-release/task.yml
+          file: monitoring-system-deployment/ci/create-offline-release/task.yml
           params:
             release_name: monitoring-system
             BOSH_ENVIRONMENT: ((bosh_target))
             BOSH_CA_CERT: ((bosh_ca_cert))
             BOSH_CLIENT: ((bosh_client))
             BOSH_CLIENT_SECRET: ((bosh_client_secret))
+        
+        - put: offline-release-version
+
+- name: remove-deployment
+  plan:
+  - put: remove-deployment
+    params:
+      delete:
+        enabled: true
+        force: true
