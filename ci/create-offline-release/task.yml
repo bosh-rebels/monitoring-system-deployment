@@ -1,0 +1,49 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: paymentshubrebels/bosh-utils
+    tag: 'latest'
+
+inputs:
+  - name: elasticsearch-compiled-release
+  - name: kibana-compiled-release
+  - name: zookeeper-compiled-release
+  - name: kafka-compiled-release
+  - name: elasticapm-compiled-release
+  - name: cmak-compiled-release
+  - name: bpm-compiled-release
+  - name: ubuntu-xenial
+  - name: offline-release-version
+
+params:
+  release_name:
+  BOSH_ENVIRONMENT:
+  BOSH_CA_CERT:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+run:
+  path: /bin/bash
+  args:
+    - -ec
+    - |
+      export AWS_DEFAULT_REGION=((s3_region))
+      export AWS_ACCESS_KEY_ID=((s3_access_key_id))
+      export AWS_SECRET_ACCESS_KEY=((s3_secret_access_key))
+      apt-get update && apt-get install -y python3-pip && pip3 install awscli
+      export PATH=$PATH:/usr/local/bin
+      export version="$(cat offline-release-version/version)"
+      export offline_tarball="${release_name}-${version}.tgz"
+
+      mkdir -p offline-release
+      pushd offline-release
+        mkdir -p releases stemcell 
+        cp ../ubuntu-xenial/*.tgz stemcell/
+        cp -t releases/ ../elasticsearch-compiled-release/*.tgz ../kibana-compiled-release/*.tgz ../zookeeper-compiled-release/*.tgz ../kafka-compiled-release/*.tgz ../elasticapm-compiled-release/*.tgz ../cmak-compiled-release/*.tgz ../bpm-compiled-release/*.tgz
+        tar -cvf ${offline_tarball} *
+
+        aws s3 cp ${offline_tarball} s3://binary-releases-repo-rebels/deployments/${release_name}/
+        rm -rf releases stemcell
+      popd

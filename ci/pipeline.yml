@@ -26,6 +26,17 @@ resources:
     client_secret: ((bosh_client_secret))
     ca_cert: ((bosh_ca_cert))
 
+- name: offline-release-version
+  type: semver
+  source:
+    driver: s3
+    region_name: ((s3_region))
+    initial_version: 0.0.1
+    bucket: bosh-releases-semver-rebels
+    key: deployment/monitoring-system/version
+    access_key_id: ((s3_access_key_id))
+    secret_access_key: ((s3_secret_access_key))
+
 - name: elasticsearch-compiled-release
   type: s3
   source:
@@ -102,6 +113,7 @@ jobs:
   - get: elasticapm-compiled-release
   - get: bpm-compiled-release
   - get: ubuntu-xenial
+  - get: offline-release-version 
 
   - task: calculate-sha-for-kibana
     file: monitoring-system-deployment/ci/calculate-sha/task.yml
@@ -233,3 +245,13 @@ jobs:
         errands_network: default
         errands_vm_type: default
         errands_persistent_disk_type: default
+    on_success:
+      do:
+        - task: create-offline-release
+          file: create-offline-release/task.yml
+          params:
+            release_name: monitoring-system
+            BOSH_ENVIRONMENT: ((bosh_target))
+            BOSH_CA_CERT: ((bosh_ca_cert))
+            BOSH_CLIENT: ((bosh_client))
+            BOSH_CLIENT_SECRET: ((bosh_client_secret))
