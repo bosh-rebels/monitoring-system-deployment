@@ -17,6 +17,7 @@ inputs:
   - name: bpm-compiled-release
   - name: ubuntu-xenial
   - name: offline-release-version
+  - name: monitoring-system-deployment
 
 params:
   release_name:
