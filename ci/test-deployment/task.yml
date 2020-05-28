@@ -19,7 +19,7 @@ run:
   args:
   - -ec
   - |
-    errands_names="${errands_to_be_run}"
-    for errand in ${errands_names}; do
+    errands_names=$( echo "${errands_to_be_run}" | tr " " "\n")
+    for errand in "${errands_names[@]}"; do
       bosh -d "${deployment_name}" run-errand "${errand}"
     done

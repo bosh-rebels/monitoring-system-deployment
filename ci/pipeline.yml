@@ -266,7 +266,7 @@ jobs:
         - task: run-errands
           file: monitoring-system-deployment/ci/test-deployment/task.yml
           params:
-            errands_to_be_run: "monitoring-system-smoke-tests smoke-tests"
+            errands_to_be_run: "monitoring-system-smoke-tests sanitytest"
             deployment_name: monitoring-system-test
             BOSH_ENVIRONMENT: ((bosh_target))
             BOSH_CA_CERT: ((bosh_ca_cert))
