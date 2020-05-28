@@ -162,6 +162,13 @@ jobs:
       tarball: elasticapm-compiled-release
     output_mapping:
       sha: elasticapm-sha
+  
+  - task: calculate-sha-for-bpm
+    file: monitoring-system-deployment/ci/calculate-sha/task.yml
+    input_mapping:
+      tarball: bpm-compiled-release
+    output_mapping:
+      sha: bpm-sha
 
   - load_var: kibana_version
     file: kibana-compiled-release/version
@@ -195,6 +202,8 @@ jobs:
 
   - load_var: bpm_version
     file: bpm-compiled-release/version
+  - load_var: bpm_sha1
+    file: bpm-sha/sha1
 
   - put: deploy-release
     params:
@@ -224,6 +233,7 @@ jobs:
         elasticapm_version: ((.:elasticapm_version)) 
         elasticapm_sha1: ((.:elasticapm_sha1))
         bpm_version: ((.:bpm_version)) 
+        bpm_sha1: ((.:bpm_sha1))
         stemcell_os: ubuntu-xenial
         stemcell_version: ((stemcell_version)) 
         elasticsearch_instances: 2 
