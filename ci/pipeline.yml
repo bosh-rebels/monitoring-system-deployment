@@ -219,7 +219,7 @@ jobs:
         - cmak-compiled-release/*.tgz
         - bpm-compiled-release/*.tgz
       vars:
-        deployment_name: monitoring-system-test
+        deployment_name: monitoring-system-deployment-builder
         elasticsearch_version: ((.:elasticsearch_version)) 
         elasticsearch_sha1: ((.:elasticsearch_sha1))
         kibana_version: ((.:kibana_version)) 
