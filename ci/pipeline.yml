@@ -106,7 +106,7 @@ resources:
     secret_access_key: ((s3_secret_access_key))
 
 jobs:
-- name: deploy-elasticsearch
+- name: deploy-monitoring-system
   plan:
   - get: monitoring-system-deployment
     trigger: true
