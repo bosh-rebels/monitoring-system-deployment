@@ -8,19 +8,26 @@ image_resource:
     tag: 'latest'
 
 inputs:
+  - name: kafka-compiled-release
+  - name: zookeeper-compiled-release
+  - name: cmak-compiled-release
   - name: elasticsearch-compiled-release
   - name: kibana-compiled-release
-  - name: zookeeper-compiled-release
-  - name: kafka-compiled-release
   - name: elasticapm-compiled-release
-  - name: cmak-compiled-release
   - name: bpm-compiled-release
   - name: ubuntu-xenial
   - name: offline-release-version
   - name: monitoring-system-deployment
+  - name: kafka-sha
+  - name: zookeeper-sha
+  - name: cmak-sha
+  - name: elasticsearch-sha
+  - name: kibana-sha
+  - name: elasticapm-sha
+  - name: bpm-sha
 
 params:
-  release_name:
+  deployment_name:
   BOSH_ENVIRONMENT:
   BOSH_CA_CERT:
   BOSH_CLIENT:
@@ -36,16 +43,29 @@ run:
       apt-get update && apt-get install -y python3-pip && pip3 install awscli
       export PATH=$PATH:/usr/local/bin
       export version="$(cat offline-release-version/version)"
-      export offline_tarball="${release_name}-${version}.tgz"
+      export offline_tarball="${deployment_name}-${version}.tgz"
 
-      mkdir -p offline-release
+      release_names="$(ruby monitoring-system-deployment/create-offline-release/get-all-release-names.rb)"
+      
+      mkdir -p offline-release 
       pushd offline-release
-        mkdir -p releases stemcell 
+        mkdir -p releases stemcell vars_file
+        touch vars_file/vars.yml
+        
         cp ../ubuntu-xenial/*.tgz stemcell/
         cp ../monitoring-system-deployment/manifest.yml .
-        cp -t releases/ ../elasticsearch-compiled-release/*.tgz ../kibana-compiled-release/*.tgz ../zookeeper-compiled-release/*.tgz ../kafka-compiled-release/*.tgz ../elasticapm-compiled-release/*.tgz ../cmak-compiled-release/*.tgz ../bpm-compiled-release/*.tgz
+        
+        for release in $release_names; do
+          sha1="$(cat ${release}-sha/sha1)"
+          echo "${release}_sha1: ${sha1}" >> vars_file/vars.yml
+        done 
+
+        for release in $release_names; do
+          cp ../${release}-compiled-release/*.tgz releases/
+        done
+        
         tar -cvf ${offline_tarball} *
 
-        aws s3 cp ${offline_tarball} s3://binary-releases-repo-rebels/deployments/${release_name}/
+        aws s3 cp ${offline_tarball} s3://binary-releases-repo-rebels/deployments/${deployment_name}/
         rm -rf releases stemcell
       popd

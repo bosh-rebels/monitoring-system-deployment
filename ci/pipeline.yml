@@ -256,7 +256,7 @@ jobs:
         - task: create-offline-release
           file: monitoring-system-deployment/ci/create-offline-release/task.yml
           params:
-            release_name: monitoring-system
+            deployment_name: monitoring-system
             BOSH_ENVIRONMENT: ((bosh_target))
             BOSH_CA_CERT: ((bosh_ca_cert))
             BOSH_CLIENT: ((bosh_client))
