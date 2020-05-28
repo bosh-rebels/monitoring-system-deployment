@@ -56,7 +56,7 @@ run:
         cp ../monitoring-system-deployment/manifest.yml .
         
         for release in $release_names; do
-          sha1="$(cat ${release}-sha/sha1)"
+          sha1="$(cat ../${release}-sha/sha1)"
           echo "${release}_sha1: ${sha1}" >> vars_file/vars.yml
         done 
 
