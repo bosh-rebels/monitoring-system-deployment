@@ -263,17 +263,23 @@ jobs:
         errands_persistent_disk_type: default
     on_success:
       do:
-        - task: create-offline-release
-          file: monitoring-system-deployment/ci/create-offline-release/task.yml
+        - task: run-errands
+          file: monitoring-system-deployment/ci/test-deployment/task.yml
           params:
-            deployment_name: monitoring-system
-            BOSH_ENVIRONMENT: ((bosh_target))
-            BOSH_CA_CERT: ((bosh_ca_cert))
-            BOSH_CLIENT: ((bosh_client))
-            BOSH_CLIENT_SECRET: ((bosh_client_secret))
-        
-        - put: offline-release-version
-          params: {bump: patch}
+            errands_to_be_run: "monitoring-system-smoke-tests smoke-tests"
+          on_success:
+            do:
+              - task: create-offline-release
+                file: monitoring-system-deployment/ci/create-offline-release/task.yml
+                params:
+                  deployment_name: monitoring-system
+                  BOSH_ENVIRONMENT: ((bosh_target))
+                  BOSH_CA_CERT: ((bosh_ca_cert))
+                  BOSH_CLIENT: ((bosh_client))
+                  BOSH_CLIENT_SECRET: ((bosh_client_secret))
+              
+              - put: offline-release-version
+                params: {bump: patch}
 
 - name: remove-deployment
   plan:
