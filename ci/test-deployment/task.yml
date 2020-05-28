@@ -19,7 +19,9 @@ run:
   args:
   - -ec
   - |
-    errands_names=$( echo "${errands_to_be_run}" | tr " " "\n")
+    errands_names=($(echo "${errands_to_be_run}" | tr ',' "\n"))
+    echo "names - ${errands_names[@]}"
     for errand in "${errands_names[@]}"; do
+      echo "Errand name - ${errand}"
       bosh -d "${deployment_name}" run-errand "${errand}"
     done
