@@ -28,10 +28,6 @@ inputs:
 
 params:
   deployment_name:
-  BOSH_ENVIRONMENT:
-  BOSH_CA_CERT:
-  BOSH_CLIENT:
-  BOSH_CLIENT_SECRET:
 run:
   path: /bin/bash
   args:
