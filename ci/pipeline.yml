@@ -263,6 +263,7 @@ jobs:
             BOSH_CLIENT_SECRET: ((bosh_client_secret))
         
         - put: offline-release-version
+          params: {bump: patch}
 
 - name: remove-deployment
   plan:

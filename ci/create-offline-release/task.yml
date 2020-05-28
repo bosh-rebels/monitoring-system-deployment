@@ -41,6 +41,7 @@ run:
       pushd offline-release
         mkdir -p releases stemcell 
         cp ../ubuntu-xenial/*.tgz stemcell/
+        cp ../monitoring-system-deployment/manifest.yml .
         cp -t releases/ ../elasticsearch-compiled-release/*.tgz ../kibana-compiled-release/*.tgz ../zookeeper-compiled-release/*.tgz ../kafka-compiled-release/*.tgz ../elasticapm-compiled-release/*.tgz ../cmak-compiled-release/*.tgz ../bpm-compiled-release/*.tgz
         tar -cvf ${offline_tarball} *
 
