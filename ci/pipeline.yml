@@ -266,7 +266,7 @@ jobs:
         - task: run-errands
           file: monitoring-system-deployment/ci/test-deployment/task.yml
           params:
-            errands_to_be_run: "monitoring-system-smoke-tests,sanitytest"
+            errands_to_be_run: "monitoring-system-smoke-tests,elasticsearch-upgrade-errands"
             deployment_name: monitoring-system-test
             BOSH_ENVIRONMENT: ((bosh_target))
             BOSH_CA_CERT: ((bosh_ca_cert))
@@ -277,10 +277,10 @@ jobs:
               - task: create-offline-release
                 file: monitoring-system-deployment/ci/create-offline-release/task.yml
                 params:
-                  deployment_name: monitoring-system-test
+                  deployment_name: monitoring-system
               - put: offline-release-version
                 params: {bump: patch}
-
+ 
 - name: remove-deployment
   plan:
   - put: remove-deployment
