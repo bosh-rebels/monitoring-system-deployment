@@ -20,6 +20,10 @@
       version: ((elasticapm_version))
       sha1: ((elasticapm_sha1))
 
+    - name: metricbeat
+      version: ((metricbeat_version))
+      sha1: ((metricbeat_sha1))
+
     - name: zookeeper
       version: ((zookeeper_version))
       sha1: ((zookeeper_sha1))
