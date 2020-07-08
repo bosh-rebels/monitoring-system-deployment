@@ -1,21 +1,21 @@
 ---
   name: ((deployment_name))
-  
+
   addons:
   - name: bpm
     jobs:
       - name: bpm
         release: bpm
-  
+
   releases:
     - name: elasticsearch
       version: ((elasticsearch_version))
       sha1: ((elasticsearch_sha1))
-  
+
     - name: kibana
       version: ((kibana_version))
       sha1: ((kibana_sha1))
-  
+
     - name: elasticapm
       version: ((elasticapm_version))
       sha1: ((elasticapm_sha1))
@@ -31,7 +31,7 @@
     - name: cmak
       version: ((cmak_version))
       sha1: ((cmak_sha1))
-  
+
     - name: bpm
       version: ((bpm_version))
       sha1: ((bpm_sha1))
@@ -40,17 +40,14 @@
     - os: ((stemcell_os))
       alias: default
       version: ((stemcell_version))
-  
+
   instance_groups:
     - name: elasticsearch
       instances: ((elasticsearch_instances))
       vm_type: ((elasticsearch_vm_type))
       stemcell: default
       persistent_disk_type: ((elasticsearch_persistent_disk_type))
-      azs:
-        - z1
-        - z2
-        - z3
+      azs: ((azs))
       networks:
         - name: ((elasticsearch_network))
       jobs:
@@ -67,45 +64,36 @@
                 xpack.monitoring.collection.enabled: true
                 xpack.monitoring.collection.interval: 10s
                 xpack.monitoring.history.duration: 7d
-  
+
     - name: kibana
       instances: ((kibana_instances))
       vm_type: ((kibana_vm_type))
       stemcell: default
       persistent_disk_type: ((kibana_persistent_disk_type))
-      azs:
-        - z1
-        - z2
-        - z3
+      azs: ((azs))
       networks:
         - name: ((kibana_network))
       jobs:
         - name: kibana
           release: kibana
-      
+
     - name: apm-server
       instances: ((elasticapm_instances))
       vm_type: ((elasticapm_vm_type))
       stemcell: default
-      azs:
-        - z1
-        - z2
-        - z3
+      azs: ((azs))
       networks:
         - name: ((elasticapm_network))
       jobs:
         - name: apm-server
           release: elasticapm
-  
+
     - name: zookeeper
       instances: ((zookeeper_instances))
       vm_type: ((zookeeper_vm_type))
       stemcell: default
       persistent_disk_type: ((zookeeper_persistent_disk_type))
-      azs: 
-        - z1
-        - z2
-        - z3
+      azs: ((azs))
       networks:
         - name: ((zookeeper_network))
       jobs:
@@ -114,31 +102,25 @@
           properties: {}
         - name: status
           release: zookeeper
-  
+
     - name: kafka
       instances: ((kafka_instances))
       vm_type: ((kafka_vm_type))
       stemcell: default
       persistent_disk_type: ((kafka_persistent_disk_type))
-      azs: 
-        - z1
-        - z2
-        - z3
+      azs: ((azs))
       networks:
         - name: ((kafka_network))
       jobs:
         - name: kafka
           release: kafka
           properties: {}
-  
+
     - name: cmak
-      instances: ((cmak_instances)) 
+      instances: ((cmak_instances))
       vm_type: ((cmak_vm_type))
       stemcell: default
-      azs: 
-        - z1
-        - z2
-        - z3
+      azs: ((azs))
       networks:
         - name: ((cmak_network))
       jobs:
@@ -146,17 +128,14 @@
           release: cmak
           properties:
             password: ((cmak_password))
-  
+
     - name: elasticsearch-upgrade-errands
       lifecycle: errand
       instances: 1
       vm_type: ((errands_vm_type))
       stemcell: default
       errands_persistent_disk_type: ((errands_persistent_disk_type))
-      azs:
-        - z1
-        - z2
-        - z3
+      azs: ((azs))
       networks:
         - name: ((errands_network))
       jobs:
@@ -164,16 +143,13 @@
           release: elasticsearch
         - name: post-upgrade
           release: elasticsearch
-  
+
     - name: monitoring-system-smoke-tests
       lifecycle: errand
       instances: 1
       vm_type: ((errands_vm_type))
       stemcell: default
-      azs: 
-        - z1
-        - z2
-        - z3
+      azs: ((azs))
       networks:
         - name: ((errands_network))
       jobs:
@@ -181,15 +157,14 @@
           release: zookeeper
         - name: sanitytest
           release: kafka
-  
+
   variables:
     - name: cmak_password
       type: password
-  
+
   update:
     canaries: 1
     max_in_flight: 1
     serial: true
     canary_watch_time: 30000-600000
     update_watch_time: 30000-600000
-  
