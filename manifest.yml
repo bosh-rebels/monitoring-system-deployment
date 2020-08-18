@@ -67,6 +67,10 @@ instance_groups:
               xpack.monitoring.collection.enabled: true
               xpack.monitoring.collection.interval: 10s
               xpack.monitoring.history.duration: 7d
+              ssl:
+                ca: ((elasticsearch_ssl.ca))
+                cert: ((elasticsearch_ssl.certificate))
+                key: ((elasticsearch_ssl.private_key))
 
   - name: kibana
     instances: ((kibana_instances))
@@ -171,3 +175,17 @@ update:
   serial: true
   canary_watch_time: 30000-600000
   update_watch_time: 30000-600000
+
+variables:
+- name: default_ca
+  type: certificate
+  options:
+    is_ca: true
+    common_name: bosh_ca
+    duration: 730
+- name: elasticsearch_ssl
+  type: certificate
+  options:
+    ca: default_ca
+    common_name: "((deployment)).((domain_name))"
+    alternative_names: ["*.((deployment)).((domain_name))"]
