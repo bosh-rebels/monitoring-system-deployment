@@ -60,6 +60,12 @@ instance_groups:
     jobs:
       - name: elasticsearch
         release: elasticsearch
+        provides:
+          elasticsearch-server-address:
+            as: elasticsearch-address
+        custom_provider_definitions:
+        - name: elasticsearch-server-address  
+          type: address
         properties:
           elasticsearch:
             node:
@@ -87,7 +93,10 @@ instance_groups:
     jobs:
       - name: kibana
         release: kibana
-
+        properties:
+          kibana:
+            ssl:
+              ca: ((elasticsearch_ssl.ca))
   - name: apm-server
     instances: ((elasticapm_instances))
     vm_type: ((elasticapm_vm_type))
@@ -204,4 +213,5 @@ variables:
   options:
     ca: default_ca
     common_name: "((deployment)).((domain_name))"
-    alternative_names: ["*.((deployment)).((domain_name))"]
+  consumes:
+    alternative_name: { from: elasticsearch-address }
