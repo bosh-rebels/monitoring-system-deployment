@@ -67,10 +67,10 @@ instance_groups:
               xpack.monitoring.collection.enabled: true
               xpack.monitoring.collection.interval: 10s
               xpack.monitoring.history.duration: 7d
-              ssl:
-                ca: ((elasticsearch_ssl.ca))
-                cert: ((elasticsearch_ssl.certificate))
-                key: ((elasticsearch_ssl.private_key))
+            ssl:
+              ca: ((elasticsearch_ssl.ca))
+              cert: ((elasticsearch_ssl.certificate))
+              key: ((elasticsearch_ssl.private_key))
 
   - name: kibana
     instances: ((kibana_instances))
