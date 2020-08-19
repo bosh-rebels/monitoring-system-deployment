@@ -39,6 +39,10 @@ releases:
     version: ((bpm_version))
     sha1: ((bpm_sha1))
 
+  - name: logstash
+    version: ((logstash_version))
+    sha1: ((logstash_sha1))
+
 stemcells:
   - os: ((stemcell_os))
     alias: default
@@ -122,6 +126,18 @@ instance_groups:
       - name: kafka
         release: kafka
         properties: {}
+
+  - name: logstash
+    instances: ((logstash_instances))
+    vm_type: ((logstash_vm_type))
+    stemcell: default
+    persistent_disk_type: ((logstash_persistent_disk_type))
+    azs: ((azs))
+    networks:
+      - name: ((logstash_network))
+    jobs:
+      - name: logstash
+        release: logstash
 
   - name: cmak
     instances: ((cmak_instances))
