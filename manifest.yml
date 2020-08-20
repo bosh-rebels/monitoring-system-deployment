@@ -95,6 +95,8 @@ instance_groups:
         release: kibana
         properties:
           kibana:
+            elasticsearch:
+              protocol: https
             ssl:
               ca: ((elasticsearch_ssl.ca))
   - name: apm-server
@@ -212,6 +214,5 @@ variables:
   type: certificate
   options:
     ca: default_ca
-    common_name: "((deployment)).((domain_name))"
-  consumes:
-    alternative_name: { from: elasticsearch-address }
+    common_name: "*.((deployment)).bosh"
+    alternative_name: "*.((deployment)).bosh"
