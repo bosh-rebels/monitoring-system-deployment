@@ -215,4 +215,4 @@ variables:
   options:
     ca: default_ca
     common_name: "((deployment)).bosh"
-    alternative_names: "((deployment)).bosh"
+    alternative_names: ["*.((deployment)).bosh"]
