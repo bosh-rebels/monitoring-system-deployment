@@ -68,6 +68,9 @@ instance_groups:
           type: address
         properties:
           elasticsearch:
+            client:
+              username: "elasticsearch"
+              password: "elasticsearch"
             node:
               allow_master: true
               allow_ingest: true
