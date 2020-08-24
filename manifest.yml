@@ -68,9 +68,6 @@ instance_groups:
           type: address
         properties:
           elasticsearch:
-            client:
-              username: "elasticsearch"
-              password: "elasticsearch"
             node:
               allow_master: true
               allow_ingest: true
@@ -80,10 +77,6 @@ instance_groups:
               xpack.monitoring.collection.enabled: true
               xpack.monitoring.collection.interval: 10s
               xpack.monitoring.history.duration: 7d
-            ssl:
-              ca: ((elasticsearch_ssl.ca))
-              cert: ((elasticsearch_ssl.certificate))
-              key: ((elasticsearch_ssl.private_key))
 
   - name: kibana
     instances: ((kibana_instances))
@@ -96,12 +89,7 @@ instance_groups:
     jobs:
       - name: kibana
         release: kibana
-        properties:
-          kibana:
-            elasticsearch:
-              protocol: https
-            ssl:
-              ca: ((elasticsearch_ssl.ca))
+
   - name: apm-server
     instances: ((elasticapm_instances))
     vm_type: ((elasticapm_vm_type))
