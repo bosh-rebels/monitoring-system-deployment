@@ -127,6 +127,12 @@ instance_groups:
     jobs:
       - name: kafka
         release: kafka
+        provides:
+          kafka-server-address:
+            as: kafka-address
+        custom_provider_definitions:
+        - name: kafka-server-address  
+          type: address
         properties: {}
 
   - name: logstash
