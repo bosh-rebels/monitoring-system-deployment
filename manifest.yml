@@ -140,31 +140,6 @@ instance_groups:
     jobs:
       - name: logstash
         release: logstash
-        properties:
-          logstash:
-            pipelines:
-            - name: data_ingestion
-              config: 
-                data_ingestion: |-
-                  input {
-                    kafka {
-                      bootstrap_servers => <%= kafka_brokers.join(',') %>
-                      client_id => "payment"
-                      group_id => "payment"
-                      consumer_threads => 3
-                      topics => ["aws-dublin-development1-app-logs"]
-                      codec => "json"
-                    }
-                  }
-              
-                  output {
-                    elasticsearch {
-                      hosts => <%= elasticsearch_nodes %>
-                      index => "test-index-%{+YYYY.MM.dd}"
-                      #user => "elastic"
-                      #password => "changeme"
-                    }
-                  }
 
   - name: cmak
     instances: ((cmak_instances))
