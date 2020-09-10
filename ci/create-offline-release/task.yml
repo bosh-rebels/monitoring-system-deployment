@@ -4,7 +4,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: paymentshubrebels/bosh-utils
+    repository: your-repo/bosh-utils
     tag: 'latest'
 
 inputs:
@@ -42,24 +42,24 @@ run:
       export offline_tarball="${deployment_name}-${version}.tgz"
 
       release_names="$(ruby monitoring-system-deployment/ci/create-offline-release/get-all-release-names.rb)"
-      
-      mkdir -p offline-release 
+
+      mkdir -p offline-release
       pushd offline-release
         mkdir -p releases stemcell vars_file
         touch vars_file/vars.yml
-        
+
         cp ../ubuntu-xenial/*.tgz stemcell/
         cp ../monitoring-system-deployment/manifest.yml .
-        
+
         for release in $release_names; do
           sha1="$(cat ../${release}-sha/sha1)"
           echo "${release}_sha1: ${sha1}" >> vars_file/vars.yml
-        done 
+        done
 
         for release in $release_names; do
           cp ../${release}-compiled-release/*.tgz releases/
         done
-        
+
         tar -cvf ${offline_tarball} *
 
         aws s3 cp ${offline_tarball} s3://binary-releases-repo-rebels/deployments/${deployment_name}/
