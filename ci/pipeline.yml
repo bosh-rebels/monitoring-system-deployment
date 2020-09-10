@@ -4,6 +4,12 @@ resource_types:
   source:
     repository: cloudfoundry/bosh-deployment-resource
 
+s3_bucket: &s3_bucket_binary
+  region_name: ((s3_region))
+  bucket: ((s3_bucket_binary))
+  access_key_id: ((s3_access_key_id))
+  secret_access_key: ((s3_secret_access_key))
+
 resources:
 - name: monitoring-system-deployment
   type: git
@@ -28,7 +34,7 @@ resources:
 
 - name: remove-deployment
   type: bosh-deployment
-  source: 
+  source:
     <<: *bosh-deployment-source
 
 - name: offline-release-version
@@ -37,7 +43,7 @@ resources:
     driver: s3
     region_name: ((s3_region))
     initial_version: 0.0.1
-    bucket: bosh-releases-semver-rebels
+    bucket: ((s3_bucket_semver))
     key: deployments/monitoring-system/version
     access_key_id: ((s3_access_key_id))
     secret_access_key: ((s3_secret_access_key))
@@ -45,65 +51,44 @@ resources:
 - name: elasticsearch-compiled-release
   type: s3
   source:
-    region_name: ((s3_region))
-    bucket: binary-releases-repo-rebels
+    <<: *s3_bucket_binary
     regexp: "elasticsearch/elasticsearch-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
 
 - name: kibana-compiled-release
   type: s3
   source:
-    region_name: ((s3_region))
-    bucket: binary-releases-repo-rebels
+    <<: *s3_bucket_binary
     regexp: "kibana/kibana-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
 
 - name: kafka-compiled-release
   type: s3
   source:
-    region_name: ((s3_region))
-    bucket: binary-releases-repo-rebels
+    <<: *s3_bucket_binary
     regexp: "kafka/kafka-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
 
 - name: cmak-compiled-release
   type: s3
   source:
-    region_name: ((s3_region))
-    bucket: binary-releases-repo-rebels
+    <<: *s3_bucket_binary
     regexp: "cmak/cmak-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
 
 - name: zookeeper-compiled-release
   type: s3
   source:
-    region_name: ((s3_region))
-    bucket: binary-releases-repo-rebels
+    <<: *s3_bucket_binary
     regexp: "zookeeper/zookeeper-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
-  
+
 - name: elasticapm-compiled-release
   type: s3
   source:
-    region_name: ((s3_region))
-    bucket: binary-releases-repo-rebels
+    <<: *s3_bucket_binary
     regexp: "elasticapm/elasticapm-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
 
 - name: bpm-compiled-release
   type: s3
   source:
-    region_name: ((s3_region))
-    bucket: binary-releases-repo-rebels
+    <<: *s3_bucket_binary
     regexp: "bpm/bpm-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
 
 jobs:
 - name: deploy-monitoring-system
@@ -162,7 +147,7 @@ jobs:
       tarball: elasticapm-compiled-release
     output_mapping:
       sha: elasticapm-sha
-  
+
   - task: calculate-sha-for-bpm
     file: monitoring-system-deployment/ci/calculate-sha/task.yml
     input_mapping:
@@ -220,43 +205,43 @@ jobs:
         - bpm-compiled-release/*.tgz
       vars:
         deployment_name: monitoring-system-test
-        elasticsearch_version: ((.:elasticsearch_version)) 
+        elasticsearch_version: ((.:elasticsearch_version))
         elasticsearch_sha1: ((.:elasticsearch_sha1))
-        kibana_version: ((.:kibana_version)) 
+        kibana_version: ((.:kibana_version))
         kibana_sha1: ((.:kibana_sha1))
-        kafka_version: ((.:kafka_version)) 
+        kafka_version: ((.:kafka_version))
         kafka_sha1: ((.:kafka_sha1))
-        zookeeper_version: ((.:zookeeper_version)) 
+        zookeeper_version: ((.:zookeeper_version))
         zookeeper_sha1: ((.:zookeeper_sha1))
-        cmak_version: ((.:cmak_version)) 
+        cmak_version: ((.:cmak_version))
         cmak_sha1: ((.:cmak_sha1))
-        elasticapm_version: ((.:elasticapm_version)) 
+        elasticapm_version: ((.:elasticapm_version))
         elasticapm_sha1: ((.:elasticapm_sha1))
-        bpm_version: ((.:bpm_version)) 
+        bpm_version: ((.:bpm_version))
         bpm_sha1: ((.:bpm_sha1))
         stemcell_os: ubuntu-xenial
-        stemcell_version: ((stemcell_version)) 
-        elasticsearch_instances: 2 
-        elasticsearch_vm_type: default 
-        elasticsearch_persistent_disk_type: default 
-        elasticsearch_network: default 
-        kibana_instances: 1 
-        kibana_vm_type: default 
-        kibana_persistent_disk_type: default 
-        kibana_network: default 
-        elasticapm_instances: 1 
-        elasticapm_vm_type: default 
-        elasticapm_network: default 
-        kafka_instances: 2 
-        kafka_vm_type: default 
-        kafka_persistent_disk_type: default 
-        kafka_network: default 
-        zookeeper_instances: 2 
-        zookeeper_vm_type: default 
-        zookeeper_network: default 
-        zookeeper_persistent_disk_type: default 
-        cmak_instances: 1 
-        cmak_vm_type: default 
+        stemcell_version: ((stemcell_version))
+        elasticsearch_instances: 2
+        elasticsearch_vm_type: default
+        elasticsearch_persistent_disk_type: default
+        elasticsearch_network: default
+        kibana_instances: 1
+        kibana_vm_type: default
+        kibana_persistent_disk_type: default
+        kibana_network: default
+        elasticapm_instances: 1
+        elasticapm_vm_type: default
+        elasticapm_network: default
+        kafka_instances: 2
+        kafka_vm_type: default
+        kafka_persistent_disk_type: default
+        kafka_network: default
+        zookeeper_instances: 2
+        zookeeper_vm_type: default
+        zookeeper_network: default
+        zookeeper_persistent_disk_type: default
+        cmak_instances: 1
+        cmak_vm_type: default
         cmak_network: default
         errands_network: default
         errands_vm_type: default
@@ -280,7 +265,7 @@ jobs:
                   deployment_name: monitoring-system
               - put: offline-release-version
                 params: {bump: patch}
- 
+
 - name: remove-deployment
   plan:
   - put: remove-deployment
