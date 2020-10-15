@@ -133,7 +133,14 @@ instance_groups:
         custom_provider_definitions:
         - name: kafka-server-address  
           type: address
-        properties: {}
+        properties:
+          topics:
+            - name: ((kafka_topic))
+              replication_factor: 2
+              partitions: 3
+              configurations:
+                - "--config retention.bytes=10737418240"
+                - "--config cleanup.policy=delete"
 
   - name: logstash
     instances: ((logstash_instances))
@@ -192,6 +199,18 @@ instance_groups:
       - name: smoke-tests
         release: zookeeper
       - name: sanitytest
+        release: kafka
+
+  - name: generate-topics
+    azs: ((azs))
+    instances: 1
+    lifecycle: errand
+    vm_type: ((errands_vm_type))
+    stemcell: default
+    networks:
+      - name: ((errands_network))
+    jobs:
+      - name: generatetopics
         release: kafka
 
 variables:
