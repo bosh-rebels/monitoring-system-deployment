@@ -54,13 +54,6 @@ cmak_name: cmak
 cmak_username: admin
 cmak_listen_port: 8080
 
-elasticapm_url: https://binary-releases-repo-rebels.s3.eu-west-2.amazonaws.com/elasticapm/elasticapm-0.27.1-ubuntu-xenial-621.74-20200518-113125-674981817.tgz
-elasticapm_version: 0.27.1
-elasticapm_sha1: e3910673329da226ec6afdab960277839d6802e0
-elasticapm_instances: 1
-elasticapm_vm_type: default
-elasticapm_network: default
-
 stemcell_os: ubuntu-xenial
 stemcell_version: 621.latest
 

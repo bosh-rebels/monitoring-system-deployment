@@ -13,7 +13,6 @@ inputs:
   - name: cmak-compiled-release
   - name: elasticsearch-compiled-release
   - name: kibana-compiled-release
-  - name: elasticapm-compiled-release
   - name: bpm-compiled-release
   - name: ubuntu-xenial
   - name: offline-release-version
@@ -23,7 +22,6 @@ inputs:
   - name: cmak-sha
   - name: elasticsearch-sha
   - name: kibana-sha
-  - name: elasticapm-sha
   - name: bpm-sha
 
 params:

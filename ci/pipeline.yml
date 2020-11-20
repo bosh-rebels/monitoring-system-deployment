@@ -78,12 +78,6 @@ resources:
     <<: *s3_bucket_binary
     regexp: "zookeeper/zookeeper-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
 
-- name: elasticapm-compiled-release
-  type: s3
-  source:
-    <<: *s3_bucket_binary
-    regexp: "elasticapm/elasticapm-(.*)-ubuntu-xenial-((stemcell_version))-.*.tgz"
-
 - name: bpm-compiled-release
   type: s3
   source:
@@ -100,7 +94,6 @@ jobs:
   - get: kafka-compiled-release
   - get: cmak-compiled-release
   - get: zookeeper-compiled-release
-  - get: elasticapm-compiled-release
   - get: bpm-compiled-release
   - get: ubuntu-xenial
   - get: offline-release-version
@@ -141,13 +134,6 @@ jobs:
     output_mapping:
       sha: zookeeper-sha
 
-  - task: calculate-sha-for-elasticapm
-    file: monitoring-system-deployment/ci/calculate-sha/task.yml
-    input_mapping:
-      tarball: elasticapm-compiled-release
-    output_mapping:
-      sha: elasticapm-sha
-
   - task: calculate-sha-for-bpm
     file: monitoring-system-deployment/ci/calculate-sha/task.yml
     input_mapping:
@@ -175,11 +161,6 @@ jobs:
   - load_var: kafka_sha1
     file: kafka-sha/sha1
 
-  - load_var: elasticapm_version
-    file: elasticapm-compiled-release/version
-  - load_var: elasticapm_sha1
-    file: elasticapm-sha/sha1
-
   - load_var: cmak_version
     file: cmak-compiled-release/version
   - load_var: cmak_sha1
@@ -200,7 +181,6 @@ jobs:
         - kibana-compiled-release/*.tgz
         - zookeeper-compiled-release/*.tgz
         - kafka-compiled-release/*.tgz
-        - elasticapm-compiled-release/*.tgz
         - cmak-compiled-release/*.tgz
         - bpm-compiled-release/*.tgz
       vars:
@@ -215,8 +195,6 @@ jobs:
         zookeeper_sha1: ((.:zookeeper_sha1))
         cmak_version: ((.:cmak_version))
         cmak_sha1: ((.:cmak_sha1))
-        elasticapm_version: ((.:elasticapm_version))
-        elasticapm_sha1: ((.:elasticapm_sha1))
         bpm_version: ((.:bpm_version))
         bpm_sha1: ((.:bpm_sha1))
         stemcell_os: ubuntu-xenial
@@ -229,9 +207,6 @@ jobs:
         kibana_vm_type: default
         kibana_persistent_disk_type: default
         kibana_network: default
-        elasticapm_instances: 1
-        elasticapm_vm_type: default
-        elasticapm_network: default
         kafka_instances: 2
         kafka_vm_type: default
         kafka_persistent_disk_type: default
