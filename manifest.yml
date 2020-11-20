@@ -15,10 +15,6 @@ releases:
     version: ((kibana_version))
     sha1: ((kibana_sha1))
 
-  - name: elasticapm
-    version: ((elasticapm_version))
-    sha1: ((elasticapm_sha1))
-
   - name: metricbeat
     version: ((metricbeat_version))
     sha1: ((metricbeat_sha1))
@@ -94,17 +90,6 @@ instance_groups:
             xpack:
               encryptedSavedObjects: 
                 encryptionKey: ((kibana_encryptionkey))
-
-  - name: apm-server
-    instances: ((elasticapm_instances))
-    vm_type: ((elasticapm_vm_type))
-    stemcell: default
-    azs: ((azs))
-    networks:
-      - name: ((elasticapm_network))
-    jobs:
-      - name: apm-server
-        release: elasticapm
 
   - name: zookeeper
     instances: ((zookeeper_instances))
