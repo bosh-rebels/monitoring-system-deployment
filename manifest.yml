@@ -60,7 +60,7 @@ instance_groups:
           elasticsearch-server-address:
             as: elasticsearch-address
         custom_provider_definitions:
-        - name: elasticsearch-server-address  
+        - name: elasticsearch-server-address
           type: address
         properties:
           elasticsearch:
@@ -88,7 +88,7 @@ instance_groups:
         properties:
           kibana:
             xpack:
-              encryptedSavedObjects: 
+              encryptedSavedObjects:
                 encryptionKey: ((kibana_encryptionkey))
 
   - name: zookeeper
@@ -121,10 +121,10 @@ instance_groups:
           kafka-server-address:
             as: kafka-address
         custom_provider_definitions:
-        - name: kafka-server-address  
+        - name: kafka-server-address
           type: address
         properties:
-          topics:
+          topics: &topic_template
             - name: ((kafka_topic))
               replication_factor: 2
               partitions: 3
@@ -133,6 +133,10 @@ instance_groups:
                 - "--config cleanup.policy=delete"
       - name: generatetopics
         release: kafka
+      - name: reassignpartitions
+        release: kafka
+        properties:
+          topics: *topic_template
 
   - name: logstash
     instances: ((logstash_instances))
