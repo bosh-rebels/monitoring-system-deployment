@@ -203,10 +203,6 @@ instance_groups:
                     }
                   }
                 }
-      - name: callapi
-        release: elasticsearch
-        properties:
-          calls:
             - endpoint: /_index_template/payhub-index-template
               action: PUT
               headers:
