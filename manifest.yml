@@ -215,7 +215,7 @@ instance_groups:
                     "settings": {
                       "number_of_shards": 1,
                       "number_of_replicas": 1,
-                      "index.lifecycle.name": "delete_indices_older_than_5mins"
+                      "index.lifecycle.name": "delete_indices_older_than_7days"
                     }
                   }
                 }
