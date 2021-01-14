@@ -210,7 +210,7 @@ instance_groups:
               payload: |
                 {
                   "priority": 115,
-                  "index_patterns": ["*-payhub-*" , "*-metrics-*" , "*-system-*"],
+                  "index_patterns": ["*-payhub-*","*-metrics-*","*-system-*","*-scheduler-*","*-spring-*","*-autoscaling-*,"*-iaas-brokers-*","*-firehose-datalake-*","*-identity-service-*","*-healthwatch-*"],
                   "template": {
                     "settings": {
                       "number_of_shards": 1,
