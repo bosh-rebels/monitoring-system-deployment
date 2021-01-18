@@ -57,22 +57,47 @@ instance_groups:
       - name: elasticsearch
         release: elasticsearch
         provides:
-          elasticsearch-server-address:
-            as: elasticsearch-address
+          elasticsearch_address:
+            as: elasticsearch_address
         custom_provider_definitions:
-        - name: elasticsearch-server-address
+        - name: elasticsearch_address  
           type: address
         properties:
           elasticsearch:
+            client:
+              username: elastic
+              password: ((elastic_user_passwd))
             node:
               allow_master: true
               allow_ingest: true
               allow_data: true
-            config_options:
-              xpack.monitoring.enabled: true
-              xpack.monitoring.collection.enabled: true
-              xpack.monitoring.collection.interval: 10s
-              xpack.monitoring.history.duration: 7d
+            security:
+              enabled: true
+              ssl:
+                transport:
+                  enabled: true
+                  private_key: ((transport_certificate.private_key))
+                  certificate: ((transport_certificate.certificate))
+                  ca: ((transport_certificate.ca))
+                http:
+                  enabled: false
+              builtin_users:
+                - name: elastic
+                  password: ((elastic_user_passwd))
+                - name: kibana_system
+                  password: ((kibana_system_user_passwd))
+                - name: apm_system
+                  password: ((apm_system_user_passwd))
+                - name: logstash_system
+                  password: ((logstash_system_user_passwd))
+                - name: beats_system
+                  password: ((beats_system_user_passwd))
+                - name: remote_monitoring_user
+                  password: ((remote_monitoring_user_passwd))
+            secure_settings:
+              - command: add
+                name: bootstrap.password
+                value: ((elastic_user_passwd))
 
   - name: kibana
     instances: ((kibana_instances))
@@ -83,13 +108,18 @@ instance_groups:
     networks:
       - name: ((kibana_network))
     jobs:
-      - name: kibana
+      - name: kibana  
         release: kibana
         properties:
           kibana:
+            elasticsearch:
+              security:
+                enabled: true
+                username: kibana_system
+                password: ((kibana_system_user_passwd))
             xpack:
-              encryptedSavedObjects:
-                encryptionKey: ((kibana_encryptionkey))
+              encryptedSavedObjects: 
+                encryptionKey: ((kibana_encryptionkey))  
 
   - name: zookeeper
     instances: ((zookeeper_instances))
@@ -150,6 +180,9 @@ instance_groups:
       - name: logstash
         release: logstash
         properties:
+          elasticsearch:
+            username: logstash_system
+            password: ((logstash_system_user_passwd))
           logstash:
             kafka:
               topic: ((kafka_topic))
@@ -237,10 +270,36 @@ instance_groups:
 variables:
   - name: cmak_password
     type: password
+  - name: elastic_user_passwd
+    type: password
+  - name: kibana_system_user_passwd
+    type: password
+  - name: apm_system_user_passwd
+    type: password
+  - name: logstash_system_user_passwd
+    type: password
+  - name: beats_system_user_passwd
+    type: password
+  - name: remote_monitoring_user_passwd
+    type: password
   - name: kibana_encryptionkey
     type: password
     options:
       length: 32
+  - name: elastic_ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: elasticsearch
+  - name: transport_certificate
+    type: certificate
+    options:
+      ca: elastic_ca
+      common_name: Elastic Search Nodes
+    consumes:
+      alternative_name:
+        from: elasticsearch_address
+        properties: { wildcard: true }
 
 update:
   canaries: 1
