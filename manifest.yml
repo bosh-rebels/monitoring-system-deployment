@@ -81,6 +81,15 @@ instance_groups:
                   ca: ((transport_certificate.ca))
                 http:
                   enabled: false
+            secure_settings:
+              - command: add
+                name: bootstrap.password
+                value: ((elastic_user_passwd))
+      - name: setup-builtin-users
+        release: elasticsearch
+        properties:
+          elasticsearch:
+            security:
               builtin_users:
                 - name: elastic
                   password: ((elastic_user_passwd))
@@ -94,11 +103,7 @@ instance_groups:
                   password: ((beats_system_user_passwd))
                 - name: remote_monitoring_user
                   password: ((remote_monitoring_user_passwd))
-            secure_settings:
-              - command: add
-                name: bootstrap.password
-                value: ((elastic_user_passwd))
-
+          
   - name: kibana
     instances: ((kibana_instances))
     vm_type: ((kibana_vm_type))
