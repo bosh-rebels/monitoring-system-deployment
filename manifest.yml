@@ -186,8 +186,8 @@ instance_groups:
         release: logstash
         properties:
           elasticsearch:
-            username: logstash_system
-            password: ((logstash_system_user_passwd))
+            username: elastic
+            password: ((elastic_user_passwd))
           logstash:
             kafka:
               topic: ((kafka_topic))
