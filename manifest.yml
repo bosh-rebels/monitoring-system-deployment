@@ -65,6 +65,7 @@ instance_groups:
         properties:
           elasticsearch:
             client:
+              protocol: https
               username: elastic
               password: ((elastic_user_passwd))
             node:
@@ -80,7 +81,10 @@ instance_groups:
                   certificate: ((transport_certificate.certificate))
                   ca: ((transport_certificate.ca))
                 http:
-                  enabled: false
+                  enabled: true
+                  private_key: ((http_certificate.private_key))
+                  certificate: ((http_certificate.certificate))
+                  ca: ((http_certificate.ca))
             secure_settings:
               - command: add
                 name: bootstrap.password
@@ -118,6 +122,9 @@ instance_groups:
         properties:
           kibana:
             elasticsearch:
+              protocol: https
+              ssl:
+                verificationMode: none
               security:
                 enabled: true
                 username: kibana_system
